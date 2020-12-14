@@ -11,10 +11,13 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-
+- PyTorch trainers now support training agents with both continuous and discrete action spaces. (#4702)
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Agents with both continuous and discrete actions are now supported. You can specify
+both continuous and discrete action sizes in Behavior Parameters. (#4702, #4718)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- `ActionSpec.validate_action()` now enforces that `UnityEnvironment.set_action_for_agent()` receives a 1D `np.array`.
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
@@ -49,6 +52,7 @@ Previously, this would result in an infinite loop and cause the editor to hang. 
 - Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
 - Change the tensor type of step count from int32 to int64 to address the overflow issue when step
 goes larger than 2^31. Previous Tensorflow checkpoints will become incompatible and cannot be loaded. (#4607)
+- Remove extra period after "Training" in console log. (#4674)
 
 
 ## [1.5.0-preview] - 2020-10-14

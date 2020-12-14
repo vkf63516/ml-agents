@@ -20,7 +20,7 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_9_docs/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/docs/
  */
 
 namespace Unity.MLAgents
@@ -61,7 +61,7 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_9_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_10_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
@@ -87,9 +87,13 @@ namespace Unity.MLAgents
         ///         <term>1.2.0</term>
         ///         <description>Support compression mapping for stacked compressed observations.</description>
         ///     </item>
+        ///     <item>
+        ///         <term>1.3.0</term>
+        ///         <description>Support action spaces with both continuous and discrete actions.</description>
+        ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.2.0";
+        const string k_ApiVersion = "1.3.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
@@ -252,6 +256,7 @@ namespace Unity.MLAgents
                 Dispose();
             }
         }
+
 #endif
 
         /// <summary>
