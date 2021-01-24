@@ -3,6 +3,7 @@ from typing import Tuple, Optional, Union
 from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
 
 from mlagents.torch_utils import torch, nn
+from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
 
 class Normalizer(nn.Module):
@@ -139,8 +140,10 @@ class SmallVisualEncoder(nn.Module):
         )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
+        if not exporting_to_onnx.is_exporting():
+            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
-        hidden = torch.reshape(hidden, (-1, self.final_flat))
+        hidden = hidden.reshape(-1, self.final_flat)
         return self.dense(hidden)
 
 
@@ -171,8 +174,10 @@ class SimpleVisualEncoder(nn.Module):
         )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
+        if not exporting_to_onnx.is_exporting():
+            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
-        hidden = torch.reshape(hidden, (-1, self.final_flat))
+        hidden = hidden.reshape(-1, self.final_flat)
         return self.dense(hidden)
 
 
@@ -206,8 +211,10 @@ class NatureVisualEncoder(nn.Module):
         )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
+        if not exporting_to_onnx.is_exporting():
+            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
-        hidden = hidden.view([-1, self.final_flat])
+        hidden = hidden.reshape([-1, self.final_flat])
         return self.dense(hidden)
 
 
@@ -256,7 +263,9 @@ class ResNetVisualEncoder(nn.Module):
         self.sequential = nn.Sequential(*layers)
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
+        if not exporting_to_onnx.is_exporting():
+            visual_obs = visual_obs.permute([0, 3, 1, 2])
         batch_size = visual_obs.shape[0]
         hidden = self.sequential(visual_obs)
-        before_out = hidden.view(batch_size, -1)
+        before_out = hidden.reshape(batch_size, -1)
         return torch.relu(self.dense(before_out))

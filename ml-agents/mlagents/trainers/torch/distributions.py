@@ -74,7 +74,7 @@ class GaussianDistInstance(DistInstance):
 
     def entropy(self):
         return torch.mean(
-            0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON),
+            0.5 * torch.log(2 * math.pi * math.e * self.std ** 2 + EPSILON),
             dim=1,
             keepdim=True,
         )  # Use equivalent behavior to TF
@@ -173,9 +173,11 @@ class GaussianDistribution(nn.Module):
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             # Expand so that entropy matches batch size. Note that we're using
-            # torch.cat here instead of torch.expand() becuase it is not supported in the
-            # verified version of Barracuda (1.0.2).
-            log_sigma = torch.cat([self.log_sigma] * inputs.shape[0], axis=0)
+            # mu*0 here to get the batch size implicitly since Barracuda 1.2.1
+            # throws error on runtime broadcasting due to unknown reason. We
+            # use this to replace torch.expand() becuase it is not supported in
+            # the verified version of Barracuda (1.0.X).
+            log_sigma = mu * 0 + self.log_sigma
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:

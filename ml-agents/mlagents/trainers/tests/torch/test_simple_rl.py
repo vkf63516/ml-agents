@@ -17,7 +17,6 @@ from mlagents.trainers.settings import (
     GAILSettings,
     RewardSignalType,
     EncoderType,
-    FrameworkType,
 )
 
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
@@ -36,8 +35,11 @@ from mlagents.trainers.tests.check_env_trains import (
 
 BRAIN_NAME = "1D"
 
-PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
-SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
+PPO_TORCH_CONFIG = ppo_dummy_config()
+SAC_TORCH_CONFIG = sac_dummy_config()
+
+# tests in this file won't be tested on GPU machine
+pytestmark = pytest.mark.check_environment_trains
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
@@ -205,7 +207,7 @@ def test_recurrent_sac(action_sizes):
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
         batch_size=256,
-        learning_rate=1e-3,
+        learning_rate=1e-4,
         buffer_init_steps=1000,
         steps_per_update=2,
     )
@@ -213,9 +215,9 @@ def test_recurrent_sac(action_sizes):
         SAC_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=2000,
+        max_steps=4000,
     )
-    check_environment_trains(env, {BRAIN_NAME: config})
+    check_environment_trains(env, {BRAIN_NAME: config}, training_seed=1213)
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
@@ -361,7 +363,7 @@ def test_gail_visual_ppo(simple_record, action_sizes):
     reward_signals = {
         RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
     }
-    hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=3e-4)
+    hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=5e-3)
     config = attr.evolve(
         PPO_TORCH_CONFIG,
         reward_signals=reward_signals,
